@@ -7,21 +7,29 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 public class ChatApp extends Application {
 
-    private boolean isServer = true;
+    private boolean isServer = false;
     private TextArea messages = new TextArea();
     private NetworkConnection connection = isServer ? createServer() : createClient();
 
     private Parent createContent() {
-        messages.setPrefHeight(350);
+        messages.setPrefHeight(250);
         TextField input = new TextField();
+        input.setPromptText("print your message here...");
+        TextField name = new TextField();
+        if (isServer) {
+            name.setDisable(true);
+        }
+        name.setPromptText("username");
         Button sendButton = new Button("Send");
         sendButton.setOnAction(event -> {
-            String message = isServer ? "Server: " : "Client: ";
+            String message = isServer ? "Server: " : name.getText() + ": ";
             message += input.getText();
             input.clear();
             messages.appendText(message + "\n");
@@ -31,10 +39,13 @@ public class ChatApp extends Application {
                 messages.appendText("Failed to send\n");
             }
         });
-        VBox root = new VBox(10, messages, input, sendButton);
+        HBox bottomBar = new HBox(10, name, sendButton);
+        bottomBar.setAlignment(Pos.CENTER);
+        bottomBar.setHgrow(name, Priority.ALWAYS);
+        VBox root = new VBox(10, messages, input, bottomBar);
         root.setAlignment(Pos.CENTER_RIGHT);
         root.setPadding(new Insets(10, 10, 10, 10));
-        root.setPrefSize(400, 400);
+        root.setPrefSize(300, 300);
         return root;
     }
 
