@@ -19,14 +19,19 @@ public class ChatApp extends Application {
     private NetworkConnection connection = isServer ? createServer() : createClient();
 
     private Parent createContent() {
+
         messages.setPrefHeight(250);
+        messages.setText("Welcome to SimpleChat v0.3\n");
+
         TextField input = new TextField();
         input.setPromptText("print your message here...");
+
         TextField name = new TextField();
-        if (isServer) {
+        if (!isServer)
+            name.setPromptText("username");
+        if (isServer)
             name.setDisable(true);
-        }
-        name.setPromptText("username");
+
         Button sendButton = new Button("Send");
         sendButton.setOnAction(event -> {
             String message = isServer ? "Server: " : name.getText() + ": ";
@@ -39,9 +44,11 @@ public class ChatApp extends Application {
                 messages.appendText("Failed to send\n");
             }
         });
+
         HBox bottomBar = new HBox(10, name, sendButton);
         bottomBar.setAlignment(Pos.CENTER);
         bottomBar.setHgrow(name, Priority.ALWAYS);
+
         VBox root = new VBox(10, messages, input, bottomBar);
         root.setAlignment(Pos.CENTER_RIGHT);
         root.setPadding(new Insets(10, 10, 10, 10));
@@ -58,6 +65,7 @@ public class ChatApp extends Application {
     public void start(Stage primaryStage) throws Exception {
         primaryStage.setScene(new Scene(createContent()));
         primaryStage.setTitle(isServer ? "Server" : "Client");
+        primaryStage.setResizable(false);
         primaryStage.show();
     }
 
